@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
 	<meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,7 +9,7 @@
 	<link rel="stylesheet" type="text/css" href="../css/font-awesome.css">
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-  <script type="text/javascript" src="../js/addproduct.js"></script>
+  <script type="text/javascript" src="../js/sign.js"></script>
   <style type="text/css">
 
   	.barra{
@@ -99,8 +99,8 @@
 		    		</div>
 		    	</div>
 		    </form>
-		    <<ul class="nav navbar-nav navbar-right">
-		    <?php 
+		    <ul class="nav navbar-nav navbar-right">
+		      <?php 
 			session_start();
 			error_reporting(0);
 				if($_SESSION['activo']==""){
@@ -111,133 +111,73 @@
 					echo"<li><a class='blanco' href='../paginas/logout.php'><span class='glyphicon glyphicon-log-out'></span>  Log Out</a></li>";
 				}
 			?>
-		      
 		    </ul>
 		</div>
 	</nav>
 	<?php
-	session_start();
-	error_reporting(0);
-		
-		$host="localhost";
-		$user="root";
-		$password="";
-		$NombreBD="gg";
-		if(isset($_POST["registrar"])){
-			$Des = $_POST["descripcion"];
-			$Nombre = $_POST["nombre"];
-			$Price = $_POST["price"];
-			$Consola = $_POST["consola"];
-			$Tipo = $_POST["type"];
-			$id = $_SESSION['id_u'];
-			$nombreArchivo=$_FILES['imagen']['name'];
-			if($Consola =="Switch") $id_consola = 1; else
-			if($Consola =="WiiU") $id_consola = 2; else
-			if($Consola =="Wii") $id_consola = 3; else
-			if($Consola =="Gamecube") $id_consola = 4; else
-			if($Consola =="N64") $id_consola = 5; else
-			if($Consola =="SNES") $id_consola = 6; else
-			if($Consola =="NES") $id_consola = 7; else
-			if($Consola =="New3DS") $id_consola = 8; else
-			if($Consola =="3DS") $id_consola = 9; else
-			if($Consola =="DS") $id_consola = 10; else
-			if($Consola =="GBA") $id_consola = 11; else
-			if($Consola =="GB") $id_consola = 12; else
-			if($Consola =="PS4S") $id_consola = 13; else
-			if($Consola =="PS3") $id_consola = 14; else
-			if($Consola =="PS2") $id_consola = 15; else
-			if($Consola =="PS") $id_consola = 16; else
-			if($Consola =="PSVITA") $id_consola = 17; else
-			if($Consola =="PSP") $id_consola = 18; else
-			if($Consola =="XBOXONE") $id_consola = 19; else
-			if($Consola =="XBOX360") $id_consola = 20; else
-			if($Consola =="XBOX") $id_consola = 21; else
-			if($Consola =="PC") $id_consola = 22; else
-			if($Consola =="OTRO") $id_consola = 23; 
-			///////////////////////////////////////////
-			$target_path = "../img/productos/";
-			$target_path = $target_path . basename( $nombreArchivo); 
-			move_uploaded_file($_FILES['imagen']['tmp_name'], $target_path);
-			
-			
-			$linck = mysqli_connect ($host,$user,$password) or die ("No se puede conectar a la base de datos");
-			
-			mysqli_select_db($linck,$NombreBD);
-			mysqli_query($linck,"INSERT INTO `gg`.`producto` (`id_producto`, `id_consola`, `id_usuario`, `precio`, `descripcion`, `tipo`, `disponible`, `nombre`) VALUES ('', '$id_consola', '$id', '$Price', '$Des', '$Tipo', 'SI', '$Nombre');");
-			
-			$consulta=mysqli_query($linck,"SELECT * FROM `gg`.`producto`;");
+	error_reporting (0);
+	
+	////////////////////////////////////
+	$host="localhost";
+	$user="root";
+	$password="";
+	$linck = mysqli_connect ($host,$user,$password) or die ("No se puede conectar");
+	$NombreBD="gg";
+	$id_u=$_SESSION['id_u'];
+	mysqli_select_db($linck,$NombreBD);
+	if(isset($_GET["registrar"])){
+		$Nombre=$_GET["nombre"];
+		$Apellido=$_GET["apellido"];
+		$Telefono=$_GET["telefono"];
+		$Email=$_GET["email"];
+		$Pass=$_GET["contraseña"];
+		mysqli_query($linck,"UPDATE `gg`.`usuario` SET `nombre`='$Nombre', `apellido`='$Apellido', `correo`='$Email', `telefono`='$Telefono', `pasword`='$Pass' WHERE `id_usuario`='$id_u';");
+		header("Location:logout.php");
+	}else $reg=false;
+		$consulta=mysqli_query($linck,"SELECT * FROM `gg`.`usuario` WHERE `id_usuario`='$id_u';");
 			for($i=0;$i<mysqli_num_rows($consulta);$i++){
 				$row = mysqli_fetch_array($consulta);
-				$nombreImg = $row['id_producto'];
-				//echo "nombre ".$nombreImg;
 			}
-		
-			rename("../img/productos/".$nombreArchivo, "../img/productos/".$nombreImg.".jpg");
-			header("Location:usuario.php");
-		}
-		mysqli_close($linck);
-		
+	mysqli_close($linck);
 	?>
 	<div class="container">
 		<div class="row">
 			<div class="col-sm-3"></div>
 			<div class="col-sm-6 text-center">
-				<h3>Nuevo producto</h3>
-					<form action="addproduct.php" id="producto" enctype="multipart/form-data" method="POST">
+				<h3><?php  if($reg) echo "Registro realizado con exito\n"; else echo"Registro de Usuario"; ?></h3>
+				<div class="col-sm-6 text-left">
+					<form action="editarcuenta.php" id="registro">
 						<div class="form-group">
-						    <label for="text">Nombre del producto:</label>
-						    <input type="text" class="form-control" id="nombre" name="nombre" maxlength="100">
+						    <label for="text">Nombre:</label>
+						     <?php echo"<textarea class='form-control' id='nombre' style='height:2.5em' name='nombre'>".$row['nombre']."</textarea>"; ?>
 						</div>
 						<div class="form-group">
-						    <label for="sel1">Consola:</label>
-							<select class="form-control" name="consola" id="consola">
-								<option value="Switch">Switch</option>
-								<option value="WiiU">WiiU</option>
-								<option value="Wii">Wii</option>
-								<option value="Gamecube">Gamecube</option>
-								<option value="N64">N64</option>
-								<option value="SNES">SNES</option>
-								<option value="NES">NES</option>
-								<option value="New3DS">New 3Ds</option>
-								<option value="3DS">3Ds</option>
-								<option value="DS">DS</option>
-								<option value="GBA">GBA</option>
-								<option value="GB">Game Boy</option>
-								<option value="PS4">Play Station 4</option>
-								<option value="PS3">Play Station 3</option>
-								<option value="PS2">Play Station 2</option>
-								<option value="PS">Play Station 1</option>
-								<option value="PSVITA">PS Vita</option>
-								<option value="PSP">PSP</option>
-								<option value="XBOXONE">Xbox One</option>
-								<option value="XBOX360">Xbox 360</option>
-								<option value="XBOX">Xbox</option>
-								<option value="PC">PC</option>
-								<option value="Other">Otro</option>
-							</select>
+						    <label for="text">Apellido:</label>
+						    <?php echo"<textarea class='form-control' id='apellido' style='height:2.5em' name='apellido'>".$row['apellido']."</textarea>"; ?>
+						    
 						</div>
 						<div class="form-group">
-						    <label for="text">Precio</label>
-						    <input type="text" class="form-control" id="price" name="price" maxlength="3" placeholder="Ej: 1000.00">
+						    <label for="text">Teléfono:</label>
+						    <?php echo"<input type='text' class='form-control' id='telefono' name='telefono' placeholder='Ej: (33)33333333  Sin espacios' value=".$row['telefono'].">"; ?>
+						</div>
+				</div>
+				<div class="col-sm-6 text-left">
+						<div class="form-group">
+						    <label for="text">Correo:</label>
+						   <?php echo"<input type='text' class='form-control' id='email' name='email' placeholder='Ej: algo@abc.com' value=".$row['correo'].">"; ?>
 						</div>
 						<div class="form-group">
-						    <label for="sel1">Tipo de juego</label>
-						    <select class="form-control" name="type" id="type">
-						    	<option value="Nuevo">Nuevo</option>
-						    	<option value="Usado">Usado</option>
-						    </select>
-						</div><br><br>
-						<div class="form-group">
-							<label for="file">Imagen del producto</label>
-							<input  type="file" name="imagen" id="imagen" accept="imagen/.jpg">
+						    <label for="password">Contraseña:</label>
+						    <?php echo"<input type='password' class='form-control' id='contraseña' name='contraseña' value=".$row['pasword'].">"; ?>
 						</div>
 						<div class="form-group">
-							<label for="file">Descripción del producto</label>
-							<textarea class="form-control" name="descripcion" maxlength="200" id="descripcion"></textarea>
+						    <label for="password">Confirmar Contraseña:</label>
+						    <?php echo"<input type='password' class='form-control' id='emailc' name='emailc' value=".$row['pasword'].">"; ?>
 						</div>
-						
-					<input type="submit" class="btn btn-default" name="registrar" value="Registrar" >
-				</form>
+				</div>
+				<input type="submit" class="btn btn-default" name="registrar" value="Registrar" >
+				</form><br>
+				
 			</div>
 		</div>
 	</div><br>
@@ -251,6 +191,5 @@
 			</div>
 		</div>
 	</div>
-	 
 </body>
 </html>

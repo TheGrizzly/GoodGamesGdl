@@ -37,14 +37,10 @@
   		border-color: white;
   		box-shadow: none;
   	}
-  	.vendido{
-  		border-color: red;
-  		background-color: red;
-  		color: white;
-  	}
   </style>
 </head>
 <body>
+	<?php session_start(); ?>
 	<div class="container-fluid">
 		<div class="row">
 			<div class="col-xs-8">
@@ -58,39 +54,39 @@
 		      <li><a class="blanco" href="../index4.php">Inicio</a></li>
 		      <li class="dropdown"><a data-toggle="dropdown" class="dropdown-toggl blanco" href="#"">Nintendo<span class="caret"></span></a>
 		      	<ul class="dropdown-menu">
-		      		<li><a href="">Switch</a></li>
-		      		<li><a href="">Wii U</a></li>
-		      		<li><a href="">Wii</a></li>
-		      		<li><a href="">Gamecube</a></li>
-		      		<li><a href="">N64</a></li>
-		      		<li><a href="">SNES</a></li>
-		      		<li><a href="">NES</a></li>
-		      		<li><a href="">New 3DS</a></li>
-		      		<li><a href="">3DS</a></li>
-		      		<li><a href="">DS</a></li>
-		      		<li><a href="">GBA</a></li>
-		      		<li><a href="">Game Boy</a></li>
+		      		<li><a href="../index4.php?consola=1">Switch</a></li>
+		      		<li><a href="../index4.php?consola=2">Wii U</a></li>
+		      		<li><a href="../index4.php?consola=3">Wii</a></li>
+		      		<li><a href="../index4.php?consola=4">Gamecube</a></li>
+		      		<li><a href="../index4.php?consola=5">N64</a></li>
+		      		<li><a href="../index4.php?consola=6">SNES</a></li>
+		      		<li><a href="../index4.php?consola=7">NES</a></li>
+		      		<li><a href="../index4.php?consola=8">New 3DS</a></li>
+		      		<li><a href="../index4.php?consola=9">3DS</a></li>
+		      		<li><a href="../index4.php?consola=10">DS</a></li>
+		      		<li><a href="../index4.php?consola=11">GBA</a></li>
+		      		<li><a href="../index4.php?consola=12">Game Boy</a></li>
 		      	</ul>
 		      </li>
 		      <li class="dropdown"><a class="dropdown-toggle blanco" data-toggle="dropdown" href="#">Sony<span class="caret"></span></a>
 		      	<ul class="dropdown-menu">
-		      		<li><a href="">PS4</a></li>
-		      		<li><a href="">PS3</a></li>
-		      		<li><a href="">PS2</a></li>
-		      		<li><a href="">PS1</a></li>
-		      		<li><a href="">PS VITA</a></li>
-		      		<li><a href="">PSP</a></li>
+		      		<li><a href="../index4.php?consola=13">PS4</a></li>
+		      		<li><a href="../index4.php?consola=14">PS3</a></li>
+		      		<li><a href="../index4.php?consola=15">PS2</a></li>
+		      		<li><a href="../index4.php?consola=16">PS1</a></li>
+		      		<li><a href="../index4.php?consola=17">PS VITA</a></li>
+		      		<li><a href="../index4.php?consola=18">PSP</a></li>
 		      	</ul>
 		      </li>
 		      <li class="dropdown"><a class="dropdown-toggle blanco" data-toggle="dropdown" href="#">XBOX<span class="caret"></span></a>
 		      	<ul class="dropdown-menu">
-		      		<li><a href="">XBOX ONE</a></li>
-		      		<li><a href="">XBOX 360</a></li>
-		      		<li><a href="">XBOX</a></li>
+		      		<li><a href="../index4.php?consola=19">XBOX ONE</a></li>
+		      		<li><a href="../index4.php?consola=20">XBOX 360</a></li>
+		      		<li><a href="../index4.php?consola=21">XBOX</a></li>
 		      	</ul>
 		      </li>
-		      <li ><a class="blanco" href="#">PC</a></li>
-		      <li ><a class="blanco" href="#">Other</a></li>
+		      <li ><a class="blanco" href="../index4.php?consola=22">PC</a></li>
+		      <li ><a class="blanco" href="../index4.php?consola=23">Other</a></li>
 		    </ul>
 		    <form class="navbar-form navbar-left" action="">
 		    	<div class="input-group">
@@ -104,7 +100,6 @@
 		    </form>
 		    <ul class="nav navbar-nav navbar-right">
 		    <?php 
-			session_start();
 			error_reporting(0);
 				if($_SESSION['activo']==""){
 					echo"<li><a class='blanco' href='../paginas/sign.php'><span class='glyphicon glyphicon-user'></span> Sign In</a></li>";
@@ -137,81 +132,43 @@
 				</div>
 			</div>
 			<div class="col-sm-9">
+				<h2>Compras</h2>
+				<table class="table table-striped">
+					<tr>
+						<th>Vendedor</th>
+						<th>Producto</th>
+						<th>Precio</th>
+						<th>Fecha</th>
+					</tr>
 				<?php
-					//error_reporting(0);
+					session_start();
+					error_reporting(0);
 					$host="localhost";
 					$user="root";
 					$password="";
 					$NombreBD="gg";
-					$tampag = 8;
-
 					$conn = new mysqli($host, $user, $password, $NombreBD);
 					if ($conn->connect_error) {
-		    				die("Connection failed: " . $conn->connect_error);
+							die("Connection failed: " . $conn->connect_error);
 					} 
-					/*
-					$sql = "SELECT * FROM producto";
-					$res = $conn->query($sql);
-
-					while($fila = $res->fetch_assoc()){
-						echo "<p>".$fila["descripcion"]."</p>";
-					}*/
-
-					
-					$sql = "SELECT * FROM producto WHERE id_usuario=".$_SESSION['id_u']." ORDER BY id_producto DESC";
-					
-
-					if(isset($_GET["actual"])){
-						$actual = $_GET["actual"];
-					}
-					else{
-						$actual = 1;
-					}
-					$liminf = $tampag*($actual -1);
-					$limsup = $tampag * $actual;
-					
+					$sql = "SELECT p.nombre as Producto, u.nombre as Vendedor, p.precio as Precio, v.fecha as Fecha from producto as p, usuario as u, venta as v where u.id_usuario=v.id_vendedor and p.id_usuario=v.id_comprador and v.id_comprador=".$_SESSION["id_u"];
 					$result = $conn->query($sql);
 					if(($result->num_rows) > 0){
-						$rows = $result->num_rows;
-						$paginas = ceil($rows/$tampag);
-						$result->close();
-						$sql = "SELECT * FROM producto ORDER BY id_producto DESC LIMIT " . $liminf . ", " . $tampag;
-						$result = $conn->query($sql);
 						while($fila = $result->fetch_assoc()){
-							echo "<div class='col-sm-3 col-xs-6'>";
-							echo "<div class='panel panel-default producto'>";
-							echo "<div class='panel-body'>";
-							echo "<a href='editarproductos.php?idproducto=".$fila["id_producto"]."'><img src='../img/productos/".$fila["id_producto"].".jpg' class='img-responsive' style='width:100%' alt='Image'></a>";
-							echo "<h5><b>".$fila["nombre"]."</b></h5>";
-							echo "<p>Costo: $".$fila["precio"]." MXN</p>";
-							if($fila["disponible"]=="NO"){
-								echo "<p class='vendido'><b>Vendido</b><p>";
-							}
-							echo "<a href='eliminarproducto.php?producto=".$fila["id_producto"]."'>Borrar producto</a>";
-							echo "</div></div></div>";
+							echo "<tr>
+									<td>".$fila["Vendedor"]."</td>
+									<td>".$fila["Producto"]."</td>
+									<td>$".$fila["Precio"]." MXN</td>
+									<td>".$fila["Fecha"]."</td>
+								</tr>";	
 						}
-						echo "<div class='col-sm-12  text-center'>";
-						if($actual>1){
-							echo "<a href='".$_SERVER["PHP_SELF"]."?actual=".($actual-1)."'>Anterior  </a>";
-						}
-						for($i=1;$i<=$paginas;$i++){
-							if($i==$actual){
-								echo "<b><a href='".$_SERVER["PHP_SELF"]."?actual=".($i)."'>".$i." </a></b>";
-							}
-							else{
-							echo "<a href='".$_SERVER["PHP_SELF"]."?actual=".($i)."'>".$i." </a>";
-							}
-						}
-						if($actual<$paginas){
-							echo "<a href='".$_SERVER["PHP_SELF"]."?actual=".($actual+1)."'> Siguiente</a>";
-						}
-						echo "</div>";
 					}
 					$conn->close();
 				?>
+				</table>
 			</div>
 		</div>
-	</div><br>
+	</div>
 	<div class="well well-sm pie">
 		<div class="container-fluid">
 			<div class="col-sm-12 text-center">

@@ -123,6 +123,9 @@
 		$user="root";
 		$password="";
 		$NombreBD="gg";
+		$linck = mysqli_connect ($host,$user,$password) or die ("No se puede conectar a la base de datos");
+		mysqli_select_db($linck,$NombreBD);
+
 		if(isset($_POST["registrar"])){
 			$Des = $_POST["descripcion"];
 			$Nombre = $_POST["nombre"];
@@ -154,89 +157,121 @@
 			if($Consola =="XBOX") $id_consola = 21; else
 			if($Consola =="PC") $id_consola = 22; else
 			if($Consola =="OTRO") $id_consola = 23; 
+			$producto = "2";
 			///////////////////////////////////////////
-			$target_path = "../img/productos/";
-			$target_path = $target_path . basename( $nombreArchivo); 
-			move_uploaded_file($_FILES['imagen']['tmp_name'], $target_path);
 			
 			
-			$linck = mysqli_connect ($host,$user,$password) or die ("No se puede conectar a la base de datos");
 			
-			mysqli_select_db($linck,$NombreBD);
-			mysqli_query($linck,"INSERT INTO `gg`.`producto` (`id_producto`, `id_consola`, `id_usuario`, `precio`, `descripcion`, `tipo`, `disponible`, `nombre`) VALUES ('', '$id_consola', '$id', '$Price', '$Des', '$Tipo', 'SI', '$Nombre');");
 			
-			$consulta=mysqli_query($linck,"SELECT * FROM `gg`.`producto`;");
+		mysqli_query($linck,"UPDATE `gg`.`producto` SET `id_consola`='$id_consola', `precio`='$Price', `descripcion`='$Des', `tipo`='$Tipo', `nombre`='$Nombre' WHERE `id_producto`='$producto';");
+			
+			if($nombreArchivo!="") {
+							unlink("../img/productos/".$producto.".jpg");
+							$target_path = "../img/productos/";
+							$target_path = $target_path . basename( $nombreArchivo); 
+							move_uploaded_file($_FILES['imagen']['tmp_name'], $target_path);
+							rename("../img/productos/".$nombreArchivo, "../img/productos/".$producto.".jpg");
+						}
+			//header("Location:usuario.php");
+		}
+		$producto = "2";
+			$consulta=mysqli_query($linck,"SELECT * FROM `gg`.`producto` WHERE `id_producto`='$producto';");
 			for($i=0;$i<mysqli_num_rows($consulta);$i++){
 				$row = mysqli_fetch_array($consulta);
-				$nombreImg = $row['id_producto'];
-				//echo "nombre ".$nombreImg;
 			}
 		
-			rename("../img/productos/".$nombreArchivo, "../img/productos/".$nombreImg.".jpg");
-			header("Location:usuario.php");
-		}
-		mysqli_close($linck);
-		
-	?>
-	<div class="container">
-		<div class="row">
-			<div class="col-sm-3"></div>
-			<div class="col-sm-6 text-center">
+		 ?>
+	
+	<div class='container'>
+		<div class='row'>
+			<div class='col-sm-3'></div>
+			<div class='col-sm-6 text-center'>
 				<h3>Nuevo producto</h3>
-					<form action="addproduct.php" id="producto" enctype="multipart/form-data" method="POST">
-						<div class="form-group">
-						    <label for="text">Nombre del producto:</label>
-						    <input type="text" class="form-control" id="nombre" name="nombre" maxlength="100">
+					<form action='editarproducto.php' id='producto' enctype='multipart/form-data' method='POST'>
+						<div class='form-group'>
+						    <label for='text'>Nombre del producto:</label>
+						   <?php echo"<input type='text' class='form-control' id='nombre' name='nombre' value=".$row['nombre'].">"; ?>
+						   
 						</div>
 						<div class="form-group">
 						    <label for="sel1">Consola:</label>
-							<select class="form-control" name="consola" id="consola">
-								<option value="Switch">Switch</option>
-								<option value="WiiU">WiiU</option>
-								<option value="Wii">Wii</option>
-								<option value="Gamecube">Gamecube</option>
-								<option value="N64">N64</option>
-								<option value="SNES">SNES</option>
-								<option value="NES">NES</option>
-								<option value="New3DS">New 3Ds</option>
-								<option value="3DS">3Ds</option>
-								<option value="DS">DS</option>
-								<option value="GBA">GBA</option>
-								<option value="GB">Game Boy</option>
-								<option value="PS4">Play Station 4</option>
-								<option value="PS3">Play Station 3</option>
-								<option value="PS2">Play Station 2</option>
-								<option value="PS">Play Station 1</option>
-								<option value="PSVITA">PS Vita</option>
-								<option value="PSP">PSP</option>
-								<option value="XBOXONE">Xbox One</option>
-								<option value="XBOX360">Xbox 360</option>
-								<option value="XBOX">Xbox</option>
-								<option value="PC">PC</option>
-								<option value="Other">Otro</option>
-							</select>
+							<?php echo"<select class='form-control' name='consola' id='consola'>";
+								if($row['id_consola']=="1")echo"<option selected value='Switch'>Switch</option>";
+								else echo"<option value='Switch'>Switch</option>";
+								if($row['id_consola']=="2")echo"<option selected value='WiiU'>WiiU</option>";
+								else echo"<option value='WiiU'>WiiU</option>";
+								if($row['id_consola']=="3")echo"<option selected value='Wii'>Wii</option>";
+								else echo"<option value='Wii'>Wii</option>";
+								if($row['id_consola']=="4")echo"<option selected value='Gamecube'>Gamecube</option>";
+								else echo"<option value='Gamecube'>Gamecube</option>";
+								if($row['id_consola']=="5")echo"<option selected value='N64'>N64</option>";
+								else echo"<option value='N64'>N64</option>";
+								if($row['id_consola']=="6")echo"<option selected value='SNES'>SNES</option>";
+								else echo"<option value='SNES'>SNES</option>";
+								if($row['id_consola']=="7")echo"<option selected value='NES'>NES</option>";
+								else echo"<option value='NES'>NES</option>";
+								if($row['id_consola']=="8")echo"<option selected value='New3DS'>New 3Ds</option>";
+								else echo"<option value='New3DS'>New 3Ds</option>";
+								if($row['id_consola']=="9")echo"<option selected value='3DS'>3Ds</option>";
+								else echo"<option value='3DS'>3Ds</option>";
+								if($row['id_consola']=="10")echo"<option selected value='DS'>DS</option>";
+								else echo"<option value='DS'>DS</option>";
+								if($row['id_consola']=="11")echo"<option selected value='GBA'>GBA</option>";
+								else echo"<option value='GBA'>GBA</option>";
+								if($row['id_consola']=="12")echo"<option selected value='GB'>GB</option>";
+								else echo"<option value='GB'>GB</option>";
+								if($row['id_consola']=="13")echo"<option selected value='PS4'>Play Station 4</option>";
+								else echo"<option value='PS4'>Play Station 4</option>";
+								if($row['id_consola']=="14")echo"<option selected value='PS3'>Play Station 3</option>";
+								else echo"<option value='PS3'>Play Station 3</option>";
+								if($row['id_consola']=="15")echo"<option selected value='PS2'>Play Station 2</option>";
+								else echo"<option value='PS2'>Play Station 2</option>";
+								if($row['id_consola']=="16")echo"<option selected value='PS'>Play Station 1</option>";
+								else echo"<option value='PS'>Play Station 1</option>";
+								if($row['id_consola']=="17")echo"<option selected value='PSVITA'>PS Vita</option>";
+								else echo"<option value='PSVITA'>PS Vita</option>";
+								if($row['id_consola']=="18")echo"<option selected value='PSP'>PSP</option>";
+								else echo"<option value='PSP'>PSP</option>";
+								if($row['id_consola']=="19")echo"<option selected value='XBOXONE'>Xbox One</option>";
+								else echo"<option value='XBOXONE'>Xbox One</option>";
+								if($row['id_consola']=="20")echo"<option selected value='XBOX360'>Xbox 360</option>";
+								else echo"<option value='XBOX360'>Xbox 360</option>";
+								if($row['id_consola']=="21")echo"<option selected value='XBOX'>Xbox</option>";
+								else echo"<option value='XBOX'>Xbox</option>";
+								if($row['id_consola']=="22")echo"<option selected value='PC'>PC</option>";
+								else echo"<option value='PC'>PC</option>";
+								if($row['id_consola']=="23")echo"<option selected value='Other'>Otro</option>";
+								else echo"<option value='Other'>Otro</option>";
+							echo"</select>";
+							  
+							?>
 						</div>
 						<div class="form-group">
 						    <label for="text">Precio</label>
-						    <input type="text" class="form-control" id="price" name="price" maxlength="3" placeholder="Ej: 1000.00">
+						    <?php echo"<input type='text' class='form-control' id='price' name='price' placeholder='Ej: 1000.00' value=".$row['precio'].">"; ?>
 						</div>
 						<div class="form-group">
 						    <label for="sel1">Tipo de juego</label>
 						    <select class="form-control" name="type" id="type">
-						    	<option value="Nuevo">Nuevo</option>
-						    	<option value="Usado">Usado</option>
+						    	<?php 
+						    	if($row['tipo']=="Nuevo")echo"<option selected value='Nuevo'>Nuevo</option>";
+								else echo"<option value='Nuevo'>Nuevo</option>";
+								if($row['tipo']=="Usado")echo"<option selected value='Usado'>Usado</option>";
+								else echo"<option value='Usado'>Usado</option>"; ?>
 						    </select>
 						</div><br><br>
 						<div class="form-group">
-							<label for="file">Imagen del producto</label>
-							<input  type="file" name="imagen" id="imagen" accept="imagen/.jpg">
+							<label for="file">Imagen del producto</label><br>
+							<?php echo"<img src='../img/productos/".$row['id_producto'].".jpg' id='img-producto' style='width:50%' alt='Image'>"; ?>
+							<br><br><br><input  type="file" name="imagen" id="imagen" accept="imagen/.jpg">
 						</div>
 						<div class="form-group">
 							<label for="file">Descripción del producto</label>
-							<textarea class="form-control" name="descripcion" maxlength="200" id="descripcion"></textarea>
+							<?php echo"<textarea class='form-control' name='descripcion' maxlength='200' id='descripcion'>".$row['descripcion']."</textarea>";
+							 mysqli_close($linck); ?>
 						</div>
 						
-					<input type="submit" class="btn btn-default" name="registrar" value="Registrar" >
+					<input type="submit" class="btn btn-default" name="registrar" value="Guardar cambios" >
 				</form>
 			</div>
 		</div>

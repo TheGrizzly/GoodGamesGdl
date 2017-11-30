@@ -186,7 +186,7 @@
 					<form action="addproduct.php" id="producto" enctype="multipart/form-data" method="POST">
 						<div class="form-group">
 						    <label for="text">Nombre del producto:</label>
-						    <input type="text" class="form-control" id="nombre" name="nombre" maxlength="100">
+						    <input type="text" class="form-control" id="nombre" name="nombre">
 						</div>
 						<div class="form-group">
 						    <label for="sel1">Consola:</label>
@@ -218,7 +218,7 @@
 						</div>
 						<div class="form-group">
 						    <label for="text">Precio</label>
-						    <input type="text" class="form-control" id="price" name="price" maxlength="3" placeholder="Ej: 1000.00">
+						    <input type="text" class="form-control" id="price" name="price" placeholder="Ej: 1000.00">
 						</div>
 						<div class="form-group">
 						    <label for="sel1">Tipo de juego</label>

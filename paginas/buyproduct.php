@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
 	<meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>GG Guadalajara</title>
-	<link rel="shortcut icon" type="image/ico" href="../index.ico">
+	<link rel="shortcut icon" type="image/ico" href="index.ico">
 	<link rel="stylesheet" type="text/css" href="../css/bootstrap.css">
 	<link rel="stylesheet" type="text/css" href="../css/bootstrap-social.css">
 	<link rel="stylesheet" type="text/css" href="../css/font-awesome.css">
@@ -14,7 +14,7 @@
   		background-color: #1229A2;
   	}
   	.navbar .container-fluid .nav li .blanco{
-  		color: white;../
+  		color: white;
   	}
   	.navbar .container-fluid .nav li .blanco:hover{
   		color: black;
@@ -37,13 +37,44 @@
   		border-color: white;
   		box-shadow: none;
   	}
-  	.vendido{
-  		border-color: red;
-  		background-color: red;
-  		color: white;
+  	.float-right{
+  		float: right;
+  	}
+  	.product{
+  		max-width: 100%;
+  	}
+  	.selled-by{
+  		color: #337ab7;
+  	}
+  	.item-photo{
+  		display: flex;
+  		justify-content: center;
+  		align-items: center;
+  		border-right: 1px solid #f6f6f6;
+  	}
+  	.full-width{
+  		width: 100%
+  	}
+  	.description{
+  		width: 100%;
+  		border-top: 1px solid silver;
+  	}
+  	.desc{
+  		padding: 15px;
+  	}
+  	.no-disponible{
+  		box-shadow: none;
+		cursor: not-allowed;
+		color: #474747 !important;
+		border-color: #cacccc !important;
+		background-image: none !important;
+		background-color: #f1f2f2 !important;
   	}
   </style>
 </head>
+<?php
+	session_start();
+?>
 <body>
 	<div class="container-fluid">
 		<div class="row">
@@ -104,13 +135,14 @@
 		    </form>
 		    <ul class="nav navbar-nav navbar-right">
 		    <?php 
-			session_start();
+
 			error_reporting(0);
+			session_start();
 				if($_SESSION['activo']==""){
-					echo"<li><a class='blanco' href='../paginas/sign.php'><span class='glyphicon glyphicon-user'></span> Sign In</a></li>";
+					echo"<li><a id='sesion' class='blanco' href='../paginas/sign.php'><span class='glyphicon glyphicon-user'></span> Sign In</a></li>";
 		      		echo"<li><a class='blanco' href='../paginas/log.php'><span class='glyphicon glyphicon-log-in'></span> Login</a></li>";
 				}else{
-					echo"<li><a class='blanco' href='../paginas/usuario.php'><span class='glyphicon glyphicon-user'></span>".$_SESSION['activo']."</a></li>";
+					echo"<li><a id='sesion' class='blanco' href='../paginas/usuario.php'><span class='glyphicon glyphicon-user'></span>".$_SESSION['activo']."</a></li>";
 					echo"<li><a class='blanco' href='../paginas/logout.php'><span class='glyphicon glyphicon-log-out'></span>  Log Out</a></li>";
 				}
 			?>
@@ -119,99 +151,80 @@
 		</div>
 	</nav>
 	<div class="container-fluid">
-		<div class="row">
-			<div class="col-sm-3">
-				<div class="well well-sm">
-					<h1>Configuraciones:</h1>
-					<div class="sidebar-nav">
-						<div class="navbar navbar-default">
-							<div class="navbar-collapse collapse sidebar-nav-collapse">
-								<ul class="nav navbar-nav">
-									<li><a href="addproduct.php">Añadir Producto</a></li>
-									<li><a href="editarcuenta.php">Configuracion de Usuario</a></li>
-									<li><a href="historial.php">Productos Comprados</a></li>
-								</ul>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="col-sm-9">
 				<?php
-					//error_reporting(0);
+					 error_reporting(0);
+					$idp = $_GET["id"];
+					$idv = "";
 					$host="localhost";
 					$user="root";
 					$password="";
 					$NombreBD="gg";
-					$tampag = 8;
-
 					$conn = new mysqli($host, $user, $password, $NombreBD);
+
 					if ($conn->connect_error) {
-		    				die("Connection failed: " . $conn->connect_error);
-					} 
-					/*
-					$sql = "SELECT * FROM producto";
-					$res = $conn->query($sql);
-
-					while($fila = $res->fetch_assoc()){
-						echo "<p>".$fila["descripcion"]."</p>";
-					}*/
-
-					
-					$sql = "SELECT * FROM producto WHERE id_usuario=".$_SESSION['id_u']." ORDER BY id_producto DESC";
-					
-
-					if(isset($_GET["actual"])){
-						$actual = $_GET["actual"];
+    					die("Connection failed: " . $conn->connect_error);
 					}
-					else{
-						$actual = 1;
-					}
-					$liminf = $tampag*($actual -1);
-					$limsup = $tampag * $actual;
-					
+					$sql = "SELECT p.precio, p.tipo, p.nombre, c.nombre AS con, u.id_usuario AS vendedor FROM producto AS p INNER JOIN usuario AS u INNER JOIN consola AS c ON p.id_usuario=u.id_usuario AND p.id_consola=c.id_consola WHERE p.id_producto=$idp";
+
 					$result = $conn->query($sql);
-					if(($result->num_rows) > 0){
-						$rows = $result->num_rows;
-						$paginas = ceil($rows/$tampag);
-						$result->close();
-						$sql = "SELECT * FROM producto ORDER BY id_producto DESC LIMIT " . $liminf . ", " . $tampag;
-						$result = $conn->query($sql);
-						while($fila = $result->fetch_assoc()){
-							echo "<div class='col-sm-3 col-xs-6'>";
-							echo "<div class='panel panel-default producto'>";
-							echo "<div class='panel-body'>";
-							echo "<a href='editarproductos.php?idproducto=".$fila["id_producto"]."'><img src='../img/productos/".$fila["id_producto"].".jpg' class='img-responsive' style='width:100%' alt='Image'></a>";
-							echo "<h5><b>".$fila["nombre"]."</b></h5>";
-							echo "<p>Costo: $".$fila["precio"]." MXN</p>";
-							if($fila["disponible"]=="NO"){
-								echo "<p class='vendido'><b>Vendido</b><p>";
-							}
-							echo "<a href='eliminarproducto.php?producto=".$fila["id_producto"]."'>Borrar producto</a>";
-							echo "</div></div></div>";
-						}
-						echo "<div class='col-sm-12  text-center'>";
-						if($actual>1){
-							echo "<a href='".$_SERVER["PHP_SELF"]."?actual=".($actual-1)."'>Anterior  </a>";
-						}
-						for($i=1;$i<=$paginas;$i++){
-							if($i==$actual){
-								echo "<b><a href='".$_SERVER["PHP_SELF"]."?actual=".($i)."'>".$i." </a></b>";
-							}
-							else{
-							echo "<a href='".$_SERVER["PHP_SELF"]."?actual=".($i)."'>".$i." </a>";
-							}
-						}
-						if($actual<$paginas){
-							echo "<a href='".$_SERVER["PHP_SELF"]."?actual=".($actual+1)."'> Siguiente</a>";
-						}
+
+					$encontrado = true;
+
+					if ($result->num_rows > 0) {
+   						$row = $result->fetch_assoc();	
+					}else{
+						$encontrado = false;
+					}
+
+					$conn->close();
+
+					if($_SESSION['activo']==""){
+						echo "<div class='row'>";
+						echo "<div class='container'>";
+						echo "<div class='text-center'>";
+						echo "<h1>Inicie sesion para poder comprar el producto</h1>";
+						echo "</div>";
+						echo "</div>";
+						echo "</div>";
+					}else if($encontrado==false){
+						echo "<div class='row'>";
+						echo "<div class='container'>";
+						echo "<div class='text-center'>";
+						echo "<h1>Producto No encontrado</h1>";
+						echo "</div>";
+						echo "</div>";
+						echo "</div>";
+					}else{
+						$idv = $row["vendedor"];
+						echo "<div class='row'>";
+						echo "<div class='container'>";
+						echo "<div class='col-xs-9'>";
+						echo "<h1>Confirmacion de compra</h1>";
+						echo "</div>";
+						echo "</div>";
+						echo "</div>";			
+						echo "<div class='row'>";
+						echo "<div class='container'>";
+						echo "<h3>".$row["nombre"]." - ".$row["con"]." - ".$row["tipo"]."</h3>";
+						echo "<div class='col-xs-3 item-photo'>";
+						echo "<img class='product img-responsive' alt='".$row["nombre"]."' src='../img/productos/".$idp.".jpg'>";
+						echo "</div>";
+						echo "<div class='float-right'>";
+						echo "<h4>Precio :<b>$".$row["precio"]."</b></h4>";
+						echo "</div>";
+						echo "</div>";
+						echo "</div>";
+						echo "<div class='row'>";
+						echo "<div class='container'>";
+						echo "<div class='float-right'>";
+						echo "<a href='confirmedpurchase.php?idp=".$idp."&idv=".$idv."&idc=".$_SESSION["id_u"]."&pName=".$row["nombre"]."&price=".$row["precio"]."' class='btn btn-lg btn-warning'>Confirmar Compra</a>";
+						echo "</div>";
+						echo "</div>";
 						echo "</div>";
 					}
-					$conn->close();
 				?>
-			</div>
-		</div>
-	</div><br>
+		
+	</div>
 	<div class="well well-sm pie">
 		<div class="container-fluid">
 			<div class="col-sm-12 text-center">

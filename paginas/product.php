@@ -193,7 +193,7 @@
 				echo "<div class='col-xs-6'>";
 				echo "<h2>".$row["nombre"]." - ".$consola["nombre"]." - ".$row["tipo"]."</h2>";
 				echo "<div class='col-xs-6 item-photo'>";
-				echo "<img class='product img-responsive' alt='".$row["nombre"]."' src='../img/img".$idp.".jpg'>";
+				echo "<img class='product img-responsive' alt='".$row["nombre"]."' src='../img/productos/".$idp.".jpg'>";
 				echo "</div>";
 				echo "</div>";
 				echo "<div class='col-xs-3'>";
@@ -201,19 +201,55 @@
 				echo "<h3>Descripcion</h3>";
 				echo "<div class='descripcion'>";
 				echo "<p class='desc'>";
-				echo "<small>".$row[descripcion]."</small>";
+				echo "<small>".$row["descripcion"]."</small>";
 				echo "</p>";
 				echo "</div>";
 				echo "<h3>Costo - $".$row["precio"]."</h3>";
 				echo "<h6 class='selled-by'>Vendido por <a href='#'>".$usuario["nombre"]."</a></h6>";
 				if($row["disponible"]='SI'){
-					echo "<a id='comprar' href='#' class='btn btn-lg btn-warning full-width'>Comprar</a>";
+					echo "<a id='comprar' href='buyproduct.php?id=".$idp."' class='btn btn-lg btn-warning full-width'>Comprar</a>";
 				}else
 					echo "<a id='comprar' href='#' class='btn btn-lg no-disponible full-width'>Comprar</a>";
 				echo "</div>";
 				echo "</div>";
 				echo "<div class='row'>";
-				echo "<div class='col-xs-10'>";
+				echo "<div class='col-xs-10 text-center'>";
+				?>
+				<form action="comentar.php" method="get">
+					<input type="hidden" name="id_p" <?php echo "value='".$_GET["id"]."'" ?>>
+					<input type="hidden" name="id_u" <?php echo "value='".$_SESSION['id_u']."'" ?>>
+					<div class="table-responsive">
+					<table class="table table-striped table-bordered table-condensed">
+						<?php
+							error_reporting(0);
+							$id_p = $_GET["id"];
+							$host="localhost";
+							$user="root";
+							$password="";
+							$NombreBD="gg";
+							$conn = new mysqli($host, $user, $password, $NombreBD);
+							if ($conn->connect_error) {
+									die("Connection failed: " . $conn->connect_error);
+							} 
+							$sql = "SELECT u.nombre as Nombre, c.comentario as Comentario FROM comentario as c, usuario as u WHERE c.id_producto='$id_p' and u.id_usuario=c.id_usuario ORDER BY fecha ASC";
+							$result = $conn->query($sql);
+							if(($result->num_rows) > 0){
+								while($fila = $result->fetch_assoc()){
+									echo "<tr>
+											<td class='info'>".$fila["Nombre"]."</td>
+											<td>".$fila["Comentario"]."</td>
+										</tr>";	
+								}
+							}
+							$conn->close();
+						?>
+						<td class="info"><?php echo $_SESSION["activo"]?></td>
+						<td><textarea class="form-control" name="comentario" maxlength="200" id="comentario"></textarea></td>
+						<td><input type="submit" class="btn btn-default" name="comentar" value="Comentar" ></td>
+					</table>
+				</div>
+				</form>
+				<?php
 				echo "</div>";
 				echo "</div>";
 			}else{

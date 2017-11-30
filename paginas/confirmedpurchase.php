@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
 	<meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>GG Guadalajara</title>
-	<link rel="shortcut icon" type="image/ico" href="../index.ico">
+	<link rel="shortcut icon" type="image/ico" href="index.ico">
 	<link rel="stylesheet" type="text/css" href="../css/bootstrap.css">
 	<link rel="stylesheet" type="text/css" href="../css/bootstrap-social.css">
 	<link rel="stylesheet" type="text/css" href="../css/font-awesome.css">
@@ -14,7 +14,7 @@
   		background-color: #1229A2;
   	}
   	.navbar .container-fluid .nav li .blanco{
-  		color: white;../
+  		color: white;
   	}
   	.navbar .container-fluid .nav li .blanco:hover{
   		color: black;
@@ -37,13 +37,44 @@
   		border-color: white;
   		box-shadow: none;
   	}
-  	.vendido{
-  		border-color: red;
-  		background-color: red;
-  		color: white;
+  	.float-right{
+  		float: right;
+  	}
+  	.product{
+  		max-width: 100%;
+  	}
+  	.selled-by{
+  		color: #337ab7;
+  	}
+  	.item-photo{
+  		display: flex;
+  		justify-content: center;
+  		align-items: center;
+  		border-right: 1px solid #f6f6f6;
+  	}
+  	.full-width{
+  		width: 100%
+  	}
+  	.description{
+  		width: 100%;
+  		border-top: 1px solid silver;
+  	}
+  	.desc{
+  		padding: 15px;
+  	}
+  	.no-disponible{
+  		box-shadow: none;
+		cursor: not-allowed;
+		color: #474747 !important;
+		border-color: #cacccc !important;
+		background-image: none !important;
+		background-color: #f1f2f2 !important;
   	}
   </style>
 </head>
+<?php
+	session_start();
+?>
 <body>
 	<div class="container-fluid">
 		<div class="row">
@@ -104,13 +135,14 @@
 		    </form>
 		    <ul class="nav navbar-nav navbar-right">
 		    <?php 
-			session_start();
+
 			error_reporting(0);
+			session_start();
 				if($_SESSION['activo']==""){
-					echo"<li><a class='blanco' href='../paginas/sign.php'><span class='glyphicon glyphicon-user'></span> Sign In</a></li>";
+					echo"<li><a id='sesion' class='blanco' href='../paginas/sign.php'><span class='glyphicon glyphicon-user'></span> Sign In</a></li>";
 		      		echo"<li><a class='blanco' href='../paginas/log.php'><span class='glyphicon glyphicon-log-in'></span> Login</a></li>";
 				}else{
-					echo"<li><a class='blanco' href='../paginas/usuario.php'><span class='glyphicon glyphicon-user'></span>".$_SESSION['activo']."</a></li>";
+					echo"<li><a id='sesion' class='blanco' href='../paginas/usuario.php'><span class='glyphicon glyphicon-user'></span>".$_SESSION['activo']."</a></li>";
 					echo"<li><a class='blanco' href='../paginas/logout.php'><span class='glyphicon glyphicon-log-out'></span>  Log Out</a></li>";
 				}
 			?>
@@ -119,99 +151,124 @@
 		</div>
 	</nav>
 	<div class="container-fluid">
-		<div class="row">
-			<div class="col-sm-3">
-				<div class="well well-sm">
-					<h1>Configuraciones:</h1>
-					<div class="sidebar-nav">
-						<div class="navbar navbar-default">
-							<div class="navbar-collapse collapse sidebar-nav-collapse">
-								<ul class="nav navbar-nav">
-									<li><a href="addproduct.php">Añadir Producto</a></li>
-									<li><a href="editarcuenta.php">Configuracion de Usuario</a></li>
-									<li><a href="historial.php">Productos Comprados</a></li>
-								</ul>
-							</div>
-						</div>
-					</div>
+		<div class='row'>
+			<div class='container'>
+				<div class='text-center'>
+					<h1>Gracias por comprar el producto</h1>
 				</div>
 			</div>
-			<div class="col-sm-9">
+		</div>
 				<?php
-					//error_reporting(0);
+					// error_reporting(0);
+					$idp = $_GET["idp"];
+					$idc = $_GET["idc"];
+					$idv = $_GET["idv"];
+					$pName = $_GET["pName"];
+					$pPrice = $_GET["price"];
 					$host="localhost";
 					$user="root";
 					$password="";
 					$NombreBD="gg";
-					$tampag = 8;
+					
+					$linck = mysqli_connect ($host,$user,$password) or die ("No se puede conectar a la base de datos");
+					mysqli_select_db($linck,$NombreBD);
+					mysqli_query($linck,"INSERT INTO `gg`.`venta` (`id_venta`, `id_producto`, `id_comprador`, `id_vendedor`, `precio`, `fecha`) VALUES (NULL, $idp, $idc, $idv, $pPrice, (SELECT NOW()) );");
+					mysqli_close($linck);	
+					
+					$linck = mysqli_connect ($host,$user,$password) or die ("No se puede conectar a la base de datos");
+					mysqli_select_db($linck,$NombreBD);
+					mysqli_query($linck,"UPDATE `gg`.`producto` SET `disponible`='NO' WHERE `id_producto`='$idp';");
+					mysqli_close($linck);
+					
+					/*$conn = new mysqli($host, $user, $password, $NombreBD);
 
-					$conn = new mysqli($host, $user, $password, $NombreBD);
 					if ($conn->connect_error) {
-		    				die("Connection failed: " . $conn->connect_error);
-					} 
-					/*
-					$sql = "SELECT * FROM producto";
-					$res = $conn->query($sql);
-
-					while($fila = $res->fetch_assoc()){
-						echo "<p>".$fila["descripcion"]."</p>";
-					}*/
-
-					
-					$sql = "SELECT * FROM producto WHERE id_usuario=".$_SESSION['id_u']." ORDER BY id_producto DESC";
-					
-
-					if(isset($_GET["actual"])){
-						$actual = $_GET["actual"];
+    					die("Connection failed: " . $conn->connect_error);
 					}
-					else{
-						$actual = 1;
-					}
-					$liminf = $tampag*($actual -1);
-					$limsup = $tampag * $actual;
-					
+
+					$sql = "SELECT correo FROM usuario WHERE id_usuario=$idv";
+
 					$result = $conn->query($sql);
-					if(($result->num_rows) > 0){
-						$rows = $result->num_rows;
-						$paginas = ceil($rows/$tampag);
-						$result->close();
-						$sql = "SELECT * FROM producto ORDER BY id_producto DESC LIMIT " . $liminf . ", " . $tampag;
-						$result = $conn->query($sql);
-						while($fila = $result->fetch_assoc()){
-							echo "<div class='col-sm-3 col-xs-6'>";
-							echo "<div class='panel panel-default producto'>";
-							echo "<div class='panel-body'>";
-							echo "<a href='editarproductos.php?idproducto=".$fila["id_producto"]."'><img src='../img/productos/".$fila["id_producto"].".jpg' class='img-responsive' style='width:100%' alt='Image'></a>";
-							echo "<h5><b>".$fila["nombre"]."</b></h5>";
-							echo "<p>Costo: $".$fila["precio"]." MXN</p>";
-							if($fila["disponible"]=="NO"){
-								echo "<p class='vendido'><b>Vendido</b><p>";
-							}
-							echo "<a href='eliminarproducto.php?producto=".$fila["id_producto"]."'>Borrar producto</a>";
-							echo "</div></div></div>";
-						}
-						echo "<div class='col-sm-12  text-center'>";
-						if($actual>1){
-							echo "<a href='".$_SERVER["PHP_SELF"]."?actual=".($actual-1)."'>Anterior  </a>";
-						}
-						for($i=1;$i<=$paginas;$i++){
-							if($i==$actual){
-								echo "<b><a href='".$_SERVER["PHP_SELF"]."?actual=".($i)."'>".$i." </a></b>";
-							}
-							else{
-							echo "<a href='".$_SERVER["PHP_SELF"]."?actual=".($i)."'>".$i." </a>";
-							}
-						}
-						if($actual<$paginas){
-							echo "<a href='".$_SERVER["PHP_SELF"]."?actual=".($actual+1)."'> Siguiente</a>";
-						}
-						echo "</div>";
+
+					if ($result->num_rows > 0) {
+   						$row = $result->fetch_assoc();	
 					}
+
+					$correoVendedor = $row["correo"];
+
 					$conn->close();
+
+					$conn2 = new mysqli($host, $user, $password, $NombreBD);
+
+					if ($conn2->connect_error) {
+    					die("Connection failed: " . $conn2->connect_error);
+					}
+
+					$sql = "SELECT correo FROM usuario WHERE id_usuario=$idc";
+
+					$res = $conn2->query($sql);
+
+					if ($res->num_rows > 0) {
+   						$row2 = $res->fetch_assoc();	
+					}
+
+					$correoComprador = $row2["correo"];
+
+					$conn2->close();
+
+					use PHPMailer\PHPMailer\PHPMailer;
+					
+					require '/vendor/autoload.php';
+
+					$mail = new PHPMailer;
+
+					$mail->isSMTP();
+
+					$mail->Host = 'smtp.gmail.com';
+
+					$mail->Port = 587;
+
+					$mail->SMTPSecure = 'tls';
+
+					$mail->SMTPAuth = true;
+
+					$mail->Username = "noreplaygoodgamesgdl@gmail.com";
+
+					$mail->Password = "GoodGamesGdl";
+
+					$mail->setFrom('noreplaygoodgamesgdl@gmail.com','GoodGamesGdl');
+
+					$mail->addReplyTo('supoortggg@gmail.com','GoodGamesGdl');
+
+					$mail->addAddress($correoVendedor,'Vendedor');
+
+					$mail->Subject = 'Compra del producto '.$pName;
+
+					$mail->AltBody = 'Se a comprado el producto '.$pName.', favor de ponerse en contacto con el comprador';
+
+
+					if(!$mail->send()){
+						echo "Mailer Error: ".$mail->ErrorInfo;
+					}else{
+						echo "Correo mandado correctamente";
+					}
+					/*echo $subject;
+
+					echo $message;
+
+
+					$subject = "Confirmacion de compra del producto ".$pName;
+					$message = "Gracias por comprar el producto ".$pName.", el vendedor se pondra en contacto con usted.";
+
+					mail($correoComprador, $subject, $message);
+
+					echo $subject;
+
+					echo $message;
+					*/
 				?>
-			</div>
-		</div>
-	</div><br>
+		
+	</div>
 	<div class="well well-sm pie">
 		<div class="container-fluid">
 			<div class="col-sm-12 text-center">

@@ -279,7 +279,7 @@
 							echo "<div class='col-sm-3 col-xs-6'>";
 							echo "<div class='panel panel-default producto'>";
 							echo "<div class='panel-body'>";
-							echo "<a href='paginas/product.php?id=".$fila["id_producto"]."'><img src='img/img".$fila["id_producto"].".jpg' class='img-responsive' style='width:100%' alt='Image'></a>";
+							echo "<a href='paginas/product.php?id=".$fila["id_producto"]."'><img src='img/productos/".$fila["id_producto"].".jpg' class='img-responsive' style='width:100%' alt='Image'></a>";
 							echo "<h5><b>".$fila["nombre"]."</b></h5>";
 							echo "<p>Costo: $".$fila["precio"]." MXN</p>";
 							echo "</div></div></div>";
